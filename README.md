@@ -54,6 +54,13 @@ MPU6050 --I2C/DATA_RDY--> STM32 --UART CSV--> USB-TTL --> PC
                                                             └─ Allan离线分析
 ```
 
+## 程序演示
+
+Qt串口监视器可实时显示三轴加速度、三轴角速度和温度，支持各轴独立勾选、
+采样率与丢帧统计、暂停绘图以及同步保存物理量CSV。
+
+![MPU6050 Qt串口实时监视器程序演示](docs/images/imu_serial_monitor_demo.png)
+
 ## Allan分析示例
 
 下图展示六轴IMU的Allan偏差及随机误差参数识别结果，包括加速度计的
