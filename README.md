@@ -49,11 +49,17 @@ stm32-mpu6050-allan-toolkit/
 
 | MPU6050 / 串口 | STM32F103 |
 |---|---|
+| VCC | 3.3V |
+| GND | GND |
 | SDA | PB7 |
 | SCL | PB6 |
 | INT | PB0 |
 | USB-TTL RX | PA9 / USART1_TX |
-| GND | GND（所有设备共地） |
+| USB-TTL GND | GND（所有设备共地） |
+
+本项目已经按 `GY-521 VCC -> STM32 3.3V` 实测正常采集，请保持3.3V供电，
+不要将 MPU6050 VCC 改接为5V。USB-TTL仅需连接RX和GND；STM32已经由
+USB或ST-LINK供电时，不要再连接USB-TTL的VCC。
 
 ## 数据流
 

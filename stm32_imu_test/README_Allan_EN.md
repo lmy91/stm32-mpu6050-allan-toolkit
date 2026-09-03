@@ -53,6 +53,8 @@ Physical wiring example (use the table above as the pin-level reference):
 
 Important:
 
+- this project uses the verified `GY-521 VCC -> STM32 3.3 V` connection; keep
+  the sensor on 3.3 V and do not connect its VCC to 5 V;
 - STM32, MPU6050, USB-to-TTL, and ST-LINK must share ground;
 - keep `BOOT0` at 0;
 - the USB-to-TTL TX pin is not required for one-way acquisition;

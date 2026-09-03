@@ -50,11 +50,18 @@ Main connections:
 
 | MPU6050 / serial signal | STM32F103 |
 |---|---|
+| VCC | 3.3 V |
+| GND | GND |
 | SDA | PB7 |
 | SCL | PB6 |
 | INT | PB0 |
 | USB-to-TTL RX | PA9 / USART1_TX |
-| GND | GND shared by all devices |
+| USB-to-TTL GND | GND shared by all devices |
+
+The verified setup for this project powers `GY-521 VCC` from the STM32 `3.3 V`
+pin. Keep this 3.3 V connection and do not change the MPU6050 VCC connection to
+5 V. Only RX and GND are required on the USB-to-TTL adapter. If the STM32 is
+already powered through USB or ST-LINK, do not connect the adapter VCC pin.
 
 ## Data flow
 

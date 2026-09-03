@@ -62,6 +62,7 @@ cd D:\Dr\algorithm\low_cost_gnss_ins\stm32_imu_test
 
 注意事项：
 
+- 本项目实测使用 `GY-521 VCC → STM32 3.3V`，请保持3.3V供电，不接5V；
 - STM32、MPU6050、USB-TTL、ST-LINK 必须共地；
 - `BOOT0` 保持为0；
 - USB-TTL 的 TX 不是采集必需连接；
