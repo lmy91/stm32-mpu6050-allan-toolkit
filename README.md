@@ -1,5 +1,7 @@
 # STM32 MPU6050 Allan Toolkit
 
+[中文](README.md) | [English](README_EN.md)
+
 基于 STM32F103 和 MPU6050 的静态数据采集、实时监视、数据解码与 Allan
 偏差分析工具。项目面向低成本 IMU 随机误差标定及 GNSS/INS 实验。
 
@@ -9,6 +11,7 @@
 - STM32通过USB-TTL输出带采样序号和时间戳的CSV；
 - PyQt5实时显示三轴加速度、三轴角速度和温度；
 - `Ax/Ay/Az/Gx/Gy/Gz` 独立勾选，支持单轴查看；
+- Qt界面支持中文/English即时切换并记住语言选择；
 - 实时保存解码后的物理量CSV；
 - 原始计数离线转换为 `m/s²`、`deg/h` 和 `℃`；
 - 计算重叠Allan偏差；
@@ -28,6 +31,7 @@ stm32-mpu6050-allan-toolkit/
 - [STM32采集与Allan分析](stm32_imu_test/README_Allan.md)
 - [Qt实时串口监视器](imu_serial_qt/README.md)
 - [Allan相关知识总结](stm32_imu_test/Allan方差知识总结.md)
+- [English: acquisition and Allan analysis](stm32_imu_test/README_Allan_EN.md)
 
 ## 硬件
 

@@ -1,5 +1,7 @@
 # MPU6050 静态采集与 Allan 随机误差分析使用说明
 
+[中文](README_Allan.md) | [English](README_Allan_EN.md)
+
 本文说明如何完成以下流程：
 
 1. 连接 MPU6050、STM32、ST-LINK 和 USB-TTL；

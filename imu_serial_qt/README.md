@@ -1,5 +1,7 @@
 # MPU6050 串口实时监视器
 
+[中文](README.md) | [English](README_EN.md)
+
 独立的 Qt 串口显示子项目，用于实时读取 STM32 输出的 MPU6050 数据，并绘制三轴加速度、三轴陀螺仪和温度曲线。
 
 ## 启动
@@ -23,6 +25,9 @@ sample,time_ms,dt_ms,ax_raw,ay_raw,az_raw,temp_raw,gx_raw,gy_raw,gz_raw
 ```
 
 界面可独立勾选 `Ax/Ay/Az/Gx/Gy/Gz`，支持仅显示任意单轴；也可以把转换后的物理量保存为 CSV。
+
+右上角“语言”下拉框可在中文与English之间即时切换。所选语言会自动保存，
+下次启动时继续使用。
 
 ## 安装依赖
 
