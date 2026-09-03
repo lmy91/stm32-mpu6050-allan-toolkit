@@ -56,6 +56,10 @@ cd D:\Dr\algorithm\low_cost_gnss_ins\stm32_imu_test
 | 数据就绪中断 | PB0 | GY-521 INT |
 | 串口输出 | PA9 | USB-TTL RXD |
 
+实物连接示例（具体引脚以接线表为准）：
+
+![STM32F103与MPU6050、ST-LINK及USB-TTL实物连接](../docs/images/hardware_wiring.jpg)
+
 注意事项：
 
 - STM32、MPU6050、USB-TTL、ST-LINK 必须共地；

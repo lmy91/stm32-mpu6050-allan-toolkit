@@ -47,6 +47,10 @@ cd stm32_imu_test
 | Data-ready interrupt | PB0 | GY-521 INT |
 | Serial output | PA9 | USB-to-TTL RXD |
 
+Physical wiring example (use the table above as the pin-level reference):
+
+![STM32F103, MPU6050, ST-LINK, and USB-to-TTL physical setup](../docs/images/hardware_wiring.jpg)
+
 Important:
 
 - STM32, MPU6050, USB-to-TTL, and ST-LINK must share ground;

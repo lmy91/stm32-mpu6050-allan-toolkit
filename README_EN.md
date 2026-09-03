@@ -35,6 +35,12 @@ Documentation:
 
 ## Hardware
 
+The following photo shows an example physical setup using an STM32F103,
+GY-521 (MPU6050), ST-LINK, and USB-to-TTL adapter. Use the pin table below as
+the authoritative wiring reference.
+
+![STM32F103, MPU6050, ST-LINK, and USB-to-TTL wiring example](docs/images/hardware_wiring.jpg)
+
 - STM32F103C8T6 development board;
 - MPU6050/GY-521 module;
 - ST-LINK V2;

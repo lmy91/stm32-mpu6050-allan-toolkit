@@ -35,6 +35,11 @@ stm32-mpu6050-allan-toolkit/
 
 ## 硬件
 
+下图为STM32F103、GY-521（MPU6050）、ST-LINK和USB-TTL的实物连接示例。
+照片用于展示设备布局，实际接线请以其后的引脚表为准。
+
+![STM32F103与MPU6050、ST-LINK及USB-TTL设备连线示意图](docs/images/hardware_wiring.jpg)
+
 - STM32F103C8T6开发板；
 - MPU6050 / GY-521模块；
 - ST-LINK V2；
