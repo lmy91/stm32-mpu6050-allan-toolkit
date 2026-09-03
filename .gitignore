@@ -1,0 +1,37 @@
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# STM32/CMake build products
+**/build/
+*.elf
+*.hex
+*.bin
+*.map
+*.o
+*.obj
+*.su
+mx.scratch/
+
+# Large recordings and generated analysis products
+/stm32_imu_test/data/
+/stm32_imu_test/decoded_data/
+/stm32_imu_test/allan_snapshots/
+/stm32_imu_test/allan_results/
+/imu_serial_qt/imu_realtime_*.csv
+
+# Local IDE, OS, and temporary files
+.vscode/
+*.user
+*.tmp
+*.log
+~$*
+Thumbs.db
+.DS_Store
+
+# Personal working document (not part of the open-source project)
+/参数.docx
