@@ -4,10 +4,12 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .venv/
+.venv-package/
 venv/
 
 # STM32/CMake build products
 **/build/
+/dist/
 *.elf
 *.hex
 *.bin
