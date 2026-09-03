@@ -25,11 +25,11 @@ low_cost_gnss_ins\
 │  └─ run_imu_serial_qt.bat     # Qt程序启动脚本
 └─ stm32_imu_test\
    ├─ Src\main.c                # STM32采集程序
-   ├─ data\                     # 原始串口采集数据
-   ├─ decoded_data\             # 解码后的物理量数据
+   ├─ data\                     # 可选保留的原始串口数据
+   ├─ decoded_data\             # 采集时直接生成的物理量数据
    ├─ allan_results\            # Allan分析结果
-   ├─ tools\capture_serial.py   # 长时间原始串口采集
-   ├─ tools\decode_imu_data.py  # 原始计数转物理量
+   ├─ tools\capture_serial.py   # 长时间采集并实时转换物理量
+   ├─ tools\decode_imu_data.py  # 兼容已有原始计数文件
    └─ tools\allan_noise_identification.py
 ```
 
@@ -159,7 +159,7 @@ D:\Anaconda3\python.exe ..\imu_serial_qt\imu_serial_qt.py
 
 Qt保存的文件已经是 Allan 程序要求的物理量格式，不需要再次解码。
 
-### 4.2 方法B：保存原始计数后再解码
+### 4.2 方法B：命令行直接采集物理量CSV
 
 将 `COM3` 替换为电脑当前显示的实际端口：
 
@@ -167,20 +167,27 @@ Qt保存的文件已经是 Allan 程序要求的物理量格式，不需要再�
 D:\Anaconda3\python.exe tools\capture_serial.py COM3 --hours 12
 ```
 
-原始串口列为：
+程序在读取每一帧串口原始计数后立即完成单位转换，默认输出到：
 
 ```text
-sample,time_ms,dt_ms,ax_raw,ay_raw,az_raw,temp_raw,gx_raw,gy_raw,gz_raw
+decoded_data\mpu6050_static_YYYYMMDD_HHMMSS_physical.csv
 ```
 
-采集完成后解码：
+文件可以直接输入 `allan_noise_identification.py`，不需要再次运行解码程序。
+输出列为：
+
+```text
+sample,time_s,dt_s,ax_m_s2,ay_m_s2,az_m_s2,temp_deg_c,gx_deg_h,gy_deg_h,gz_deg_h
+```
+
+如果实验同时需要保留原始计数，增加 `--raw-output`：
 
 ```powershell
-D:\Anaconda3\python.exe tools\decode_imu_data.py `
-  data\mpu6050_static_YYYYMMDD_HHMMSS.csv
+D:\Anaconda3\python.exe tools\capture_serial.py COM3 --hours 12 `
+  --raw-output data\mpu6050_static_raw.csv
 ```
 
-默认结果写入 `decoded_data`。解码换算关系为：
+实时解码换算关系为：
 
 ```text
 acceleration_m_s2 = raw / 16384 × 9.80665
@@ -188,8 +195,8 @@ angular_rate_deg_h = raw / 131 × 3600
 temperature_deg_c = temp_raw / 340 + 36.53
 ```
 
-`decode_imu_data.py`还会生成六轴加温度的总览图。可以通过
-`--plot-block-seconds 10`获得更平滑的长时间曲线，或设置为`0.1`查看更多细节。
+`decode_imu_data.py`保留用于兼容以前已经采集的原始计数CSV，并可生成六轴加
+温度的总览图。新采集文件已经是物理量格式，不要再交给该脚本重复解码。
 
 ## 5. Allan程序要求的输入格式
 

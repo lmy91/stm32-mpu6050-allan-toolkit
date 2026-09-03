@@ -22,11 +22,11 @@ stm32-mpu6050-allan-toolkit/
 │  └─ run_imu_serial_qt.bat     # Windows launcher
 └─ stm32_imu_test/
    ├─ Src/main.c                # STM32 acquisition firmware
-   ├─ data/                     # Raw serial recordings
-   ├─ decoded_data/             # Decoded physical-unit recordings
+   ├─ data/                     # Optionally retained raw serial recordings
+   ├─ decoded_data/             # Physical-unit recordings decoded during capture
    ├─ allan_results/            # Allan-analysis output
-   ├─ tools/capture_serial.py   # Long-duration raw serial logger
-   ├─ tools/decode_imu_data.py  # Raw-count decoder
+   ├─ tools/capture_serial.py   # Long capture with online unit conversion
+   ├─ tools/decode_imu_data.py  # Compatibility decoder for existing raw files
    └─ tools/allan_noise_identification.py
 ```
 
@@ -148,7 +148,7 @@ The **Language** list switches the interface between Chinese and English. The
 selection is stored automatically. Qt output is already in the format required
 by the Allan tool and does not need decoding.
 
-### 4.2 Method B: save raw counts, then decode them
+### 4.2 Method B: capture a physical-unit CSV from the command line
 
 Replace `COM3` with the actual port:
 
@@ -156,19 +156,27 @@ Replace `COM3` with the actual port:
 python tools\capture_serial.py COM3 --hours 12
 ```
 
-Raw serial columns:
+Each raw serial frame is converted as it is received. The default output is:
 
 ```text
-sample,time_ms,dt_ms,ax_raw,ay_raw,az_raw,temp_raw,gx_raw,gy_raw,gz_raw
+decoded_data\mpu6050_static_YYYYMMDD_HHMMSS_physical.csv
 ```
 
-Decode the completed recording:
+This file can be passed directly to `allan_noise_identification.py`; no second
+decode step is required. Its columns are:
+
+```text
+sample,time_s,dt_s,ax_m_s2,ay_m_s2,az_m_s2,temp_deg_c,gx_deg_h,gy_deg_h,gz_deg_h
+```
+
+To retain the original integer counts as well, add `--raw-output`:
 
 ```powershell
-python tools\decode_imu_data.py data\mpu6050_static_YYYYMMDD_HHMMSS.csv
+python tools\capture_serial.py COM3 --hours 12 `
+  --raw-output data\mpu6050_static_raw.csv
 ```
 
-Output is written to `decoded_data` by default. Conversions are:
+Online conversions are:
 
 ```text
 acceleration_m_s2 = raw / 16384 × 9.80665
@@ -176,8 +184,9 @@ angular_rate_deg_h = raw / 131 × 3600
 temperature_deg_c = temp_raw / 340 + 36.53
 ```
 
-The decoder also creates a 6-axis-plus-temperature overview. Use
-`--plot-block-seconds 10` for smoother long-duration plots or `0.1` for detail.
+`decode_imu_data.py` remains available for raw-count CSV files captured before
+this change and can generate a 6-axis-plus-temperature overview. Do not run it
+again on new physical-unit files.
 
 ## 5. Allan input format
 

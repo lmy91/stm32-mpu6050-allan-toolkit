@@ -584,14 +584,22 @@ Allan方差 → 随机噪声和时变零偏参数
 正式采集命令：
 
 ```powershell
-cd "C:\Users\12597\Desktop\low_cost_ gnss_ins\stm32_imu_test\stm32_imu_test"
+cd D:\Dr\algorithm\low_cost_gnss_ins\stm32_imu_test
 D:\Anaconda3\python.exe tools\capture_serial.py COM4 --hours 6
+```
+
+当前 `capture_serial.py` 会在接收时直接转换并保存物理量CSV，默认文件位于
+`decoded_data`，无需再执行离线解码。只有需要同时保留原始计数时才添加：
+
+```powershell
+--raw-output data\mpu6050_static_raw.csv
 ```
 
 分析命令：
 
 ```powershell
-D:\Anaconda3\python.exe tools\allan_analysis.py data\mpu6050_static_YYYYMMDD_HHMMSS.csv
+D:\Anaconda3\python.exe tools\allan_noise_identification.py `
+  decoded_data\mpu6050_static_YYYYMMDD_HHMMSS_physical.csv
 ```
 
 ### 15.2 长平均时间点的可信度
@@ -676,4 +684,3 @@ Allan很长τ、斜率+1
 
 - [MPU-6000/MPU-6050 Product Specification](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet.pdf)
 - [MPU-6000/MPU-6050 Register Map and Descriptions](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf)
-
