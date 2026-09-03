@@ -25,6 +25,10 @@ Use the **Language** list in the upper-right corner to switch between Chinese
 and English immediately. The application remembers the selection for the next
 launch.
 
+## Application preview
+
+![MPU6050 real-time serial monitor in English](../docs/images/imu_serial_monitor_demo_en.png)
+
 ## Serial data format
 
 The application accepts the following 10-column integer CSV stream:

@@ -63,7 +63,7 @@ MPU6050 --I2C/DATA_RDY--> STM32 --UART CSV--> USB-to-TTL --> PC
 The Qt monitor displays acceleration, angular rate, and temperature. It also
 reports sample rate, lost frames, and malformed lines, and can save decoded data.
 
-![MPU6050 Qt real-time serial monitor](docs/images/imu_serial_monitor_demo.png)
+![MPU6050 Qt real-time serial monitor in English](docs/images/imu_serial_monitor_demo_en.png)
 
 ## Allan-analysis example
 
