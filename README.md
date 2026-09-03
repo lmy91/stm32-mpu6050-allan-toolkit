@@ -63,8 +63,8 @@ Qt串口监视器可实时显示三轴加速度、三轴角速度和温度，支
 
 ## Allan分析示例
 
-下图展示六轴IMU的Allan偏差及随机误差参数识别结果，包括加速度计的
-VRW、BI、RRW与Rate Ramp，以及陀螺仪的ARW、BI、RRW与Rate Ramp。
+下图展示六轴IMU陀螺仪和加表的Allan偏差及随机误差参数识别结果，包括
+ARW/VRW、BI、RRW与Rate Ramp。
 
 ![六轴IMU Allan随机误差参数识别结果](stm32_imu_test/allan_results/imu_realtime_20260902_130103_noise/allan_identification.png)
 
