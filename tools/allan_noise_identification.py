@@ -22,6 +22,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+TOOLS_DIR = pathlib.Path(__file__).resolve().parent
+DATA_DIR = TOOLS_DIR.parent / "data"
 G0 = 9.80665
 DEG_PER_RAD = 180.0 / math.pi
 
@@ -709,7 +711,7 @@ def main() -> None:
     if not args.csv.exists():
         raise SystemExit(f"CSV not found: {args.csv}")
 
-    output = args.output or pathlib.Path("allan_results") / f"{args.csv.stem}_noise"
+    output = args.output or DATA_DIR / "allan_results" / f"{args.csv.stem}_noise"
     output.mkdir(parents=True, exist_ok=True)
 
     print(f"Loading {args.csv.resolve()} ...", flush=True)

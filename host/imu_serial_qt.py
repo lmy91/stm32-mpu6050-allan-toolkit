@@ -22,6 +22,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 G0 = 9.80665
 ACCEL_SCALE = G0 / 16384.0
 GYRO_DEG_H_SCALE = 3600.0 / 131.0
+PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
+DEFAULT_DATA_DIR = PROJECT_ROOT / "data" / "decoded"
 
 
 TRANSLATIONS = {
@@ -379,8 +381,10 @@ class ImuSerialMonitor(QtWidgets.QMainWindow):
         log_path: pathlib.Path | None = None
         if self.save_checkbox.isChecked():
             default_name = f"imu_realtime_{time.strftime('%Y%m%d_%H%M%S')}.csv"
+            DEFAULT_DATA_DIR.mkdir(parents=True, exist_ok=True)
+            default_path = DEFAULT_DATA_DIR / default_name
             selected, _ = QtWidgets.QFileDialog.getSaveFileName(
-                self, self.tr_text("save_dialog"), default_name, "CSV files (*.csv)"
+                self, self.tr_text("save_dialog"), str(default_path), "CSV files (*.csv)"
             )
             if not selected:
                 return

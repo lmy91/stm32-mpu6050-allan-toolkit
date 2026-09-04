@@ -1,7 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from pathlib import Path
+
+HOST_DIR = Path(SPECPATH)
+
 a = Analysis(
-    ['imu_serial_qt/imu_serial_qt.py'],
+    [str(HOST_DIR / 'imu_serial_qt.py')],
     pathex=[],
     binaries=[],
     datas=[],

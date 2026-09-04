@@ -14,6 +14,8 @@ import numpy as np
 import pandas as pd
 
 
+TOOLS_DIR = pathlib.Path(__file__).resolve().parent
+DATA_DIR = TOOLS_DIR.parent / "data"
 G0 = 9.80665
 ACCEL_SCALE = G0 / 16384.0       # m/s^2 per LSB at +/-2 g
 GYRO_SCALE = 3600.0 / 131.0      # deg/h per LSB at +/-250 deg/s
@@ -176,7 +178,7 @@ def main() -> None:
     if args.chunk_rows < 1000:
         raise SystemExit("--chunk-rows must be at least 1000")
 
-    output_dir = pathlib.Path("decoded_data")
+    output_dir = DATA_DIR / "decoded"
     output_csv = args.output_csv or output_dir / f"{args.csv.stem}_physical.csv"
     plot_path = args.plot or output_dir / f"{args.csv.stem}_7channel.png"
     output_csv.parent.mkdir(parents=True, exist_ok=True)

@@ -16,6 +16,8 @@ import time
 import serial
 
 
+TOOLS_DIR = pathlib.Path(__file__).resolve().parent
+DATA_DIR = TOOLS_DIR.parent / "data"
 G0 = 9.80665
 ACCEL_SCALE = G0 / 16384.0       # m/s^2 per LSB at +/-2 g
 GYRO_SCALE = 3600.0 / 131.0      # deg/h per LSB at +/-250 deg/s
@@ -71,14 +73,14 @@ def main() -> None:
     parser.add_argument("--hours", type=float, default=0.0,
                         help="Stop after this many hours; 0 means until Ctrl+C")
     parser.add_argument("--output", type=pathlib.Path,
-                        help="Physical CSV path (default: timestamped file in decoded_data/)")
+                        help="Physical CSV path (default: timestamped file in data/decoded/)")
     parser.add_argument("--raw-output", type=pathlib.Path,
                         help="Optional path for retaining the original raw-count CSV")
     args = parser.parse_args()
 
     stamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     output = args.output or (
-        pathlib.Path("decoded_data") / f"mpu6050_static_{stamp}_physical.csv"
+        DATA_DIR / "decoded" / f"mpu6050_static_{stamp}_physical.csv"
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     if args.raw_output:

@@ -1,169 +1,125 @@
-# STM32 MPU6050 Allan Toolkit
+# STM32 MPU6050 采集与 Allan 方差工具箱
 
-[中文](README.md) | [English](README_EN.md)
+[English](README_EN.md) | 中文
 
-基于 STM32F103 和 MPU6050 的静态数据采集、实时监视、数据解码与 Allan
-偏差分析工具。项目面向低成本 IMU 随机误差标定及 GNSS/INS 实验。
-
-## 功能
-
-- MPU6050 `DATA_RDY` 中断触发的约 100 Hz 六轴采集；
-- STM32通过USB-TTL输出带采样序号和时间戳的CSV；
-- PyQt5实时显示三轴加速度、三轴角速度和温度；
-- `Ax/Ay/Az/Gx/Gy/Gz` 独立勾选，支持单轴查看；
-- Qt界面支持中文/English即时切换并记住语言选择；
-- 实时保存解码后的物理量CSV；
-- 原始计数离线转换为 `m/s²`、`deg/h` 和 `℃`；
-- 计算重叠Allan偏差；
-- 自动识别ARW/VRW、BI、RRW和Rate Ramp候选区间；
-- 输出温度相关性、稳定性曲线、参数CSV和中文判读报告。
+本项目提供一套完整的 MPU6050 数据链路：STM32F103 实时采集、Qt 串口监视与保存、CSV 解码，以及 Allan 方差随机误差辨识。
 
 ## 项目结构
 
-```text
-stm32-mpu6050-allan-toolkit/
-├─ imu_serial_qt/       Qt实时串口监视器
-└─ stm32_imu_test/      STM32固件、解码和Allan分析工具
-```
+    firmware/                 STM32F103 下位机固件
+    host/                     Qt 串口实时监视器及 EXE 打包配置
+    tools/                    串口采集、历史数据解码、Allan 分析工具
+    data/raw/                 原始整数 CSV（本地数据，不提交）
+    data/decoded/             物理量 CSV（本地数据，不提交）
+    data/allan_results/       Allan 分析结果（本地结果，不提交）
+    docs/                     知识说明和文档图片
 
-详细说明：
+各模块的详细说明：
 
-- [STM32采集与Allan分析](stm32_imu_test/README_Allan.md)
-- [Qt实时串口监视器](imu_serial_qt/README.md)
-- [Allan相关知识总结](stm32_imu_test/Allan方差知识总结.md)
-- [English: acquisition and Allan analysis](stm32_imu_test/README_Allan_EN.md)
+- [下位机固件](firmware/README.md)
+- [Qt 实时监视器](host/README.md)
+- [数据工具与 Allan 分析](tools/README.md)
+- [Allan 方差知识总结](docs/Allan方差知识总结.md)
 
-## 硬件
+## 硬件连接
 
-下图为STM32F103、GY-521（MPU6050）、ST-LINK和USB-TTL的实物连接示例。
-照片用于展示设备布局，实际接线请以其后的引脚表为准。
+当前项目经过验证的连接如下。GY-521 使用 3.3 V 供电。
 
-![STM32F103与MPU6050、ST-LINK及USB-TTL设备连线示意图](docs/images/hardware_wiring.jpg)
+| 设备引脚 | STM32F103C8T6 | 用途 |
+| --- | --- | --- |
+| GY-521 VCC | 3.3V | IMU 供电 |
+| GY-521 GND | GND | 共地 |
+| GY-521 SCL | PB6 | I2C1_SCL |
+| GY-521 SDA | PB7 | I2C1_SDA |
+| GY-521 INT | PB0 | 数据就绪中断 |
+| USB-TTL RX | PA9 | 接收 STM32 USART1_TX |
+| USB-TTL GND | GND | 共地 |
 
-- STM32F103C8T6开发板；
-- MPU6050 / GY-521模块；
-- ST-LINK V2；
-- CH340或其他3.3 V TTL串口模块。
+ST-LINK 只负责下载和调试固件；USB-TTL 负责把采集数据送到电脑。两者可以同时连接。
 
-核心接线：
+<p align="center">
+  <img src="docs/images/hardware_wiring.jpg" alt="STM32、MPU6050、ST-LINK 与 USB-TTL 实物连接" width="700">
+</p>
 
-| MPU6050 / 串口 | STM32F103 |
-|---|---|
-| VCC | 3.3V |
-| GND | GND |
-| SDA | PB7 |
-| SCL | PB6 |
-| INT | PB0 |
-| USB-TTL RX | PA9 / USART1_TX |
-| USB-TTL GND | GND（所有设备共地） |
+## 从零开始运行
 
-本项目已经按 `GY-521 VCC -> STM32 3.3V` 实测正常采集，请保持3.3V供电，
-不要将 MPU6050 VCC 改接为5V。USB-TTL仅需连接RX和GND；STM32已经由
-USB或ST-LINK供电时，不要再连接USB-TTL的VCC。
+### 1. 安装软件
 
-## 数据流
+- STM32CubeIDE for Visual Studio Code，或 CMake、Ninja 与 GNU Arm Embedded Toolchain
+- STM32CubeProgrammer 和 ST-LINK 驱动
+- Python 3.10 或更高版本
 
-```text
-MPU6050 --I2C/DATA_RDY--> STM32 --UART CSV--> USB-TTL --> PC
-                                                            ├─ Qt实时显示/保存
-                                                            └─ Allan离线分析
-```
+在仓库根目录安装 Python 依赖：
+
+    D:\Anaconda3\python.exe -m pip install -r host\requirements.txt
+    D:\Anaconda3\python.exe -m pip install -r tools\requirements.txt
+
+如果 Python 不在该位置，请替换为自己的解释器路径。
+
+### 2. 编译 STM32 固件
+
+在 PowerShell 中执行：
+
+    $ninjaDir = "$env:LOCALAPPDATA\stm32cube\bundles\ninja\1.13.2+st.1\bin"
+    $gccDir = "$env:LOCALAPPDATA\stm32cube\bundles\gnu-tools-for-stm32\14.3.1+st.2\bin"
+    $env:Path = "$ninjaDir;$gccDir;$env:Path"
+    Push-Location firmware
+    cmake --preset Release
+    cmake --build --preset Release
+    Pop-Location
+
+生成文件位于 firmware/build/Release/。工具版本目录可能不同，请按本机实际安装版本修改路径。
+
+### 3. 烧录固件
+
+连接 ST-LINK 的 SWDIO、SWCLK、GND 和 3.3V，然后用 STM32CubeProgrammer 选择生成的 ELF 文件烧录。命令行示例：
+
+    & "$env:LOCALAPPDATA\stm32cube\bundles\programmer\2.23.0\bin\STM32_Programmer_CLI.exe" -c port=SWD mode=UR reset=HWrst -w "firmware\build\Release\stm32_imu_test.elf" -v -rst
+
+复位或重新上电后，固件自动开始采集并通过 PA9 输出，不需要电脑再发送启动命令。
+
+### 4. 运行 Qt 实时监视器
+
+    D:\Anaconda3\python.exe host\imu_serial_qt.py
+
+也可以双击 host/run_imu_serial_qt.bat。选择 USB-TTL 对应串口和 115200 波特率后点击“连接”。勾选“同时保存物理量 CSV”时，默认保存到 data/decoded/。
+
+### 5. 命令行采集
+
+下面命令采集 COM3 的 12 小时数据，并实时转换成与 Allan 工具一致的物理量格式：
+
+    D:\Anaconda3\python.exe tools\capture_serial.py COM3 --hours 12
+
+文件默认保存在 data/decoded/。如需同时保留原始整数帧：
+
+    D:\Anaconda3\python.exe tools\capture_serial.py COM3 --hours 12 --raw-output data\raw\mpu6050_static_raw.csv
+
+### 6. 分析 Allan 方差
+
+    D:\Anaconda3\python.exe tools\allan_noise_identification.py data\decoded\你的数据.csv --rate 100 --skip-minutes 30 --points 90
+
+结果默认写入 data/allan_results/数据文件名_noise/。建议静置采集至少数小时，采集期间避免振动，并尽量保持温度稳定。
+
+## 数据格式
+
+STM32 串口原始帧共 10 列：
+
+    sample,time_ms,dt_ms,ax_raw,ay_raw,az_raw,temp_raw,gx_raw,gy_raw,gz_raw
+
+解码后和 Allan 工具使用的物理量 CSV：
+
+    sample,time_s,dt_s,ax_m_s2,ay_m_s2,az_m_s2,temp_deg_c,gx_deg_h,gy_deg_h,gz_deg_h
 
 ## 程序演示
 
-Qt串口监视器可实时显示三轴加速度、三轴角速度和温度，支持各轴独立勾选、
-采样率与丢帧统计、暂停绘图以及同步保存物理量CSV。
+![Qt 串口实时监视器](docs/images/imu_serial_monitor_demo.png)
 
-![MPU6050 Qt串口实时监视器程序演示](docs/images/imu_serial_monitor_demo.png)
+![Allan 方差辨识结果](docs/images/allan_identification.png)
 
-## Allan分析示例
+## 构建文件与实验数据
 
-下图展示六轴IMU陀螺仪和加表的Allan偏差及随机误差参数识别结果，包括
-ARW/VRW、BI、RRW与Rate Ramp。
+固件 build、PyInstaller 的 build/dist、Python 缓存以及 data/ 下的实验数据均已由 .gitignore 排除。空数据目录通过 .gitkeep 保留。删除这些生成文件不会丢失源代码，可按本文命令重新构建。
 
-![六轴IMU Allan随机误差参数识别结果](stm32_imu_test/allan_results/imu_realtime_20260902_130103_noise/allan_identification.png)
+## 许可证
 
-## 快速开始
-
-### 1. 运行Qt监视器
-
-安装Python依赖：
-
-```powershell
-python -m pip install -r imu_serial_qt\requirements.txt
-```
-
-启动：
-
-```powershell
-python imu_serial_qt\imu_serial_qt.py
-```
-
-也可以在Windows中双击：
-
-```text
-imu_serial_qt\run_imu_serial_qt.bat
-```
-
-刷新并选择USB-TTL对应的实际COM端口，波特率选择115200。串口不能同时被
-串口助手、Qt监视器和其他采集程序占用。
-
-### 2. 数据格式
-
-STM32原始输出：
-
-```text
-sample,time_ms,dt_ms,ax_raw,ay_raw,az_raw,temp_raw,gx_raw,gy_raw,gz_raw
-```
-
-Qt保存或离线解码后的物理量格式：
-
-```text
-sample,time_s,dt_s,ax_m_s2,ay_m_s2,az_m_s2,temp_deg_c,gx_deg_h,gy_deg_h,gz_deg_h
-```
-
-### 3. Allan分析
-
-`allan_noise_identification.py`只接受上述物理量CSV。示例：
-
-```powershell
-cd stm32_imu_test
-
-python tools\allan_noise_identification.py `
-  decoded_data\your_recording_physical.csv `
-  --rate 100 `
-  --skip-minutes 30 `
-  --points 90 `
-  --output allan_results\your_recording_result
-```
-
-程序生成：
-
-- `allan_deviation.png`：加速度计和陀螺仪双图总览；
-- `allan_identification.png`：六轴噪声区间识别图；
-- `stability_overview.png`：60秒均值与温度稳定性图；
-- `allan_parameters.csv`：随机误差参数及拟合信息；
-- `allan_deviation.csv`：各τ点的六轴Allan偏差；
-- `随机误差判读报告.md`：中文分析报告。
-
-## STM32构建与烧录
-
-固件使用CMake、GNU Arm Embedded Toolchain和STM32CubeProgrammer。完整接线、
-构建和烧录步骤见[README_Allan.md](stm32_imu_test/README_Allan.md)。
-
-## 实验数据
-
-长时间IMU采集文件通常为数百MB，不随Git仓库发布。仓库通过`.gitignore`
-排除了原始CSV、解码CSV、分析快照和生成结果。用户可按照文档自行采集，或将
-数据发布到Zenodo、OSF等独立数据存储平台后在此处添加下载链接。
-
-## 注意事项
-
-- Allan长时间尺度容易受到温度、供电和环境振动影响；
-- 自动识别结果是候选值，应通过重复实验和温控实验验证；
-- BI不能直接平方后作为卡尔曼滤波每步过程噪声；
-- 本项目用于实验和研究，不适用于未经验证的安全关键系统。
-
-## License
-
-本项目采用[MIT License](LICENSE)。第三方代码仍遵循其各自的许可证声明。
+本项目采用 [MIT License](LICENSE)。

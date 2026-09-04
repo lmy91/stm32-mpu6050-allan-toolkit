@@ -584,22 +584,22 @@ Allan方差 → 随机噪声和时变零偏参数
 正式采集命令：
 
 ```powershell
-cd D:\Dr\algorithm\low_cost_gnss_ins\stm32_imu_test
+cd D:\Dr\algorithm\low_cost_gnss_ins
 D:\Anaconda3\python.exe tools\capture_serial.py COM4 --hours 6
 ```
 
 当前 `capture_serial.py` 会在接收时直接转换并保存物理量CSV，默认文件位于
-`decoded_data`，无需再执行离线解码。只有需要同时保留原始计数时才添加：
+`data\decoded`，无需再执行离线解码。只有需要同时保留原始计数时才添加：
 
 ```powershell
---raw-output data\mpu6050_static_raw.csv
+--raw-output data\raw\mpu6050_static_raw.csv
 ```
 
 分析命令：
 
 ```powershell
 D:\Anaconda3\python.exe tools\allan_noise_identification.py `
-  decoded_data\mpu6050_static_YYYYMMDD_HHMMSS_physical.csv
+  data\decoded\mpu6050_static_YYYYMMDD_HHMMSS_physical.csv
 ```
 
 ### 15.2 长平均时间点的可信度
